@@ -146,6 +146,27 @@
   .rfunnel>div{background:rgba(255,255,255,.16);border-radius:12px;padding:12px 16px;flex:1;min-width:110px;}
   .rfunnel b{font-size:22px;font-weight:800;display:block;}
   .rfunnel span{font-size:12px;opacity:.9;}
+  .bighero{background:linear-gradient(135deg,#6366f1,#4f46e5);border-radius:24px;color:#fff;padding:40px 34px;box-shadow:0 24px 60px rgba(79,70,229,.3);margin-bottom:6px;}
+  .bighero h1{font-size:29px;margin:0 0 12px;letter-spacing:-.02em;line-height:1.18;}
+  .bighero p{font-size:16px;opacity:.93;line-height:1.5;max-width:640px;margin:0;}
+  .oppmoat{background:#fff;border:1px solid var(--line);border-left:5px solid var(--indigo);border-radius:16px;padding:22px 26px;font-size:15.5px;line-height:1.6;color:#374151;box-shadow:0 8px 22px rgba(2,6,23,.06);}
+  .oppstats{display:flex;gap:16px;margin:24px 0;flex-wrap:wrap;}
+  .ostat{flex:1;min-width:165px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;text-align:center;box-shadow:0 8px 22px rgba(2,6,23,.06);}
+  .ostat .n{font-size:34px;font-weight:800;color:var(--indigo);letter-spacing:-.02em;}
+  .ostat .l{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.4;}
+  .steps3{display:flex;gap:14px;flex-wrap:wrap;}
+  .ostep{flex:1;min-width:200px;background:#fff;border:1px solid var(--line);border-top:4px solid var(--teal);border-radius:16px;padding:20px;box-shadow:0 6px 16px rgba(2,6,23,.05);}
+  .ostep .num{font-size:12px;font-weight:800;color:var(--teal-d);letter-spacing:.05em;}
+  .ostep h4{margin:6px 0 6px;font-size:16px;}
+  .ostep p{margin:0;font-size:13px;color:var(--muted);line-height:1.5;}
+  .deal{background:linear-gradient(135deg,#0ea5a4,#0d9488);border-radius:22px;color:#fff;padding:30px 32px;box-shadow:0 18px 44px rgba(13,148,136,.28);}
+  .deal h3{margin:0 0 18px;font-size:22px;}
+  .dealrows{display:flex;flex-direction:column;gap:14px;}
+  .dealrow{display:flex;gap:14px;align-items:flex-start;font-size:15.5px;line-height:1.45;}
+  .dealrow .di{font-size:24px;flex:none;line-height:1;}
+  .split{display:flex;align-items:center;justify-content:center;gap:18px;margin:24px 0 4px;}
+  .split .half{background:rgba(255,255,255,.18);border-radius:16px;padding:16px 30px;text-align:center;font-weight:800;font-size:30px;}
+  .split .half span{display:block;font-size:13px;font-weight:600;opacity:.9;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -158,6 +179,7 @@
     <button onclick="go('patient',this)">Patient App</button>
     <button onclick="go('cockpit',this)">Your Cockpit</button>
     <button onclick="go('connect',this)">How it connects</button>
+    <button onclick="go('opportunity',this)">💡 Let's Build This</button>
   </div>
 </div></div>
 
@@ -295,6 +317,45 @@
     <div class="fstep" style="border-top-color:var(--green);"><div class="n" style="background:var(--green);">5</div><div class="fi">🎉</div><div class="ft">Booked &amp; notified</div><div class="fd">Writes to Square → syncs to Google → patient texted "confirmed."</div></div>
   </div>
   <p class="caption" style="margin-top:22px;">Your real schedule comes straight from <b>Square</b> (your system of record). Confirmed bookings sync out to Google Calendar. Texts run on a HIPAA-signed service — never any health info in a message.</p>
+</div>
+
+<!-- OPPORTUNITY -->
+<div class="view" id="opportunity">
+  <div class="bighero">
+    <h1>This isn't just for your practice. It's a business — and I want to build it with you.</h1>
+    <p>The system that's about to fix your clinic doesn't exist for any PT out there. Here's the opening I see — and the deal I want to make with you.</p>
+  </div>
+
+  <h2 class="vt">Why it's wide open</h2>
+  <div class="oppmoat">The reason no tool fixes this for you is the reason it fixes it for <b>no</b> good PT. Your schedule isn't open slots — it's a matrix only you understand: who's ready to be grouped, who still needs you one-on-one. <b>Every tool on the market auto-schedules</b> — they're all built backwards for how PT actually works. We're the only thing built <i>around</i> it. The thing that makes you impossible to serve with off-the-shelf software is exactly what makes <b>the whole industry</b> impossible to serve. <b>That's the opening.</b></div>
+
+  <div class="oppstats">
+    <div class="ostat"><div class="n">38,000</div><div class="l">outpatient PT clinics in the U.S.</div></div>
+    <div class="ostat"><div class="n">~$3.8B</div><div class="l">a year in patients quietly slipping away</div></div>
+    <div class="ostat"><div class="n">$0</div><div class="l">tools that do this on Square — the software is <i>abandoning</i> Square, leaving PTs like you with nothing</div></div>
+  </div>
+
+  <h2 class="vt" style="margin-top:30px;">The plan</h2>
+  <p class="vsub">Prove it small, then take it everywhere.</p>
+  <div class="steps3">
+    <div class="ostep"><div class="num">STEP 1</div><h4>Prove it at your place</h4><p>3–4 months. Real numbers — patients recovered, your list shrinking, dollars back in your pocket.</p></div>
+    <div class="ostep"><div class="num">STEP 2</div><h4>Take it to PTs you know</h4><p>Your numbers are the only pitch we need. A PT who built it and uses it beats any salesman.</p></div>
+    <div class="ostep"><div class="num">STEP 3</div><h4>Scale it</h4><p>Across the city, then wherever it goes. Every clinic we add makes it smarter and harder to copy.</p></div>
+  </div>
+
+  <div class="deal" style="margin-top:30px;">
+    <h3>The deal I want with you</h3>
+    <div class="dealrows">
+      <div class="dealrow"><span class="di">🛠️</span><div><b>I do all the legwork.</b> I build it, I run it, the AI does the heavy lifting. You never touch the tech.</div></div>
+      <div class="dealrow"><span class="di">⭐</span><div><b>You're the face.</b> The PT who made it. You open the doors — other PTs trust you, not a software rep.</div></div>
+      <div class="dealrow"><span class="di">🤝</span><div><b>We split everything 50/50.</b> Real wealth for both of us, built toward an exit — together.</div></div>
+    </div>
+    <div class="split">
+      <div class="half">50%<span>You</span></div>
+      <div class="half">50%<span>Me</span></div>
+    </div>
+    <p style="text-align:center;font-size:15px;margin:8px 0 0;opacity:.96;">Let's prove it at your place — then go build something. <b>— Howard</b></p>
+  </div>
 </div>
 
 <div class="footnote">Recalibrate PT — built &amp; run by Howard Woodham. This is a live preview; final app is built for your practice.</div>
