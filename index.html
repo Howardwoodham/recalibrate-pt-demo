@@ -129,6 +129,23 @@
   .fstep .fi{font-size:22px;}.fstep .ft{font-weight:700;font-size:14px;margin:6px 0 4px;}.fstep .fd{font-size:12px;color:var(--muted);line-height:1.45;}
   .footnote{text-align:center;color:#aab2c0;font-size:12px;padding:24px;}
   @media(max-width:720px){.cards3{grid-template-columns:1fr;}.cal{min-width:100%;}}
+  .board{background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px 28px;box-shadow:0 12px 34px rgba(2,6,23,.08);}
+  .chart{display:flex;align-items:flex-end;gap:22px;height:240px;padding:0 8px;border-bottom:2px solid var(--line);}
+  .bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+  .bar .val{font-size:18px;font-weight:800;margin-bottom:6px;color:var(--teal-d);}
+  .bar .col{width:100%;max-width:74px;height:0;border-radius:10px 10px 0 0;transition:height 1.1s cubic-bezier(.2,.8,.2,1);background:linear-gradient(180deg,#2dd4bf,#0ea5a4);}
+  .bar.first .col{background:linear-gradient(180deg,#fca5a5,#f87171);}
+  .bar.first .val{color:#dc2626;}
+  .chartx{display:flex;gap:22px;padding:8px 8px 0;}
+  .chartx .lbl{flex:1;text-align:center;font-size:12px;color:var(--muted);font-weight:600;}
+  .report{background:linear-gradient(135deg,#0ea5a4,#0d9488);color:#fff;border-radius:20px;padding:26px 28px;box-shadow:0 16px 40px rgba(13,148,136,.28);}
+  .rlabel{font-size:11px;letter-spacing:.1em;opacity:.85;font-weight:700;}
+  .rhead{font-size:40px;font-weight:800;letter-spacing:-.02em;margin:6px 0 2px;}
+  .rsub{font-size:15px;opacity:.95;max-width:480px;line-height:1.45;}
+  .rfunnel{display:flex;gap:14px;margin-top:20px;flex-wrap:wrap;}
+  .rfunnel>div{background:rgba(255,255,255,.16);border-radius:12px;padding:12px 16px;flex:1;min-width:110px;}
+  .rfunnel b{font-size:22px;font-weight:800;display:block;}
+  .rfunnel span{font-size:12px;opacity:.9;}
 </style>
 </head>
 <body>
@@ -136,6 +153,7 @@
   <div class="logo"><span class="d"></span> Recalibrate&nbsp;PT <span style="color:#9aa3b2;font-weight:500;">· your patient revenue system</span></div>
   <div class="nav">
     <button class="active" onclick="go('overview',this)">Overview</button>
+    <button onclick="go('scoreboard',this)">The Scoreboard</button>
     <button onclick="go('plan',this)">The Plan</button>
     <button onclick="go('patient',this)">Patient App</button>
     <button onclick="go('cockpit',this)">Your Cockpit</button>
@@ -161,6 +179,39 @@
     <div class="ocard"><div class="ic">🛡️</div><h3>Fully managed &amp; compliant</h3><p>HIPAA-built end to end. I run the whole thing weekly and send you a monthly report of exactly what it recovered.</p></div>
   </div>
   <p class="caption" style="text-align:center;margin-top:26px;">Use the tabs up top to walk through the plan and actually click the app →</p>
+</div>
+
+<!-- SCOREBOARD -->
+<div class="view" id="scoreboard">
+  <h2 class="vt">The scoreboard — one number that proves it's working</h2>
+  <p class="vsub">Every name on your six-week list is a patient about to slip away. My whole job is to drive that number toward zero — and you watch it happen, every month.</p>
+  <div class="board">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;">
+      <div style="font-weight:700;font-size:16px;">Patients about to slip · your six-week list</div>
+      <div style="font-size:12px;color:var(--muted);font-weight:700;">↓ smaller is better · goal ≈ 0</div>
+    </div>
+    <div class="chart" id="chart" style="margin-top:18px;"></div>
+    <div class="chartx" id="chartx"></div>
+    <p class="caption">Today it's a manual list that misses people. Automated, it never misses anyone. Then — as patients stop slipping in the first place — <b>it shrinks every month.</b> A list near zero means the leak is plugged.</p>
+  </div>
+  <div style="margin-top:22px;">
+    <div class="report">
+      <div class="rlabel">YOUR MONTHLY REPORT</div>
+      <div class="rhead">38 → 11</div>
+      <div class="rsub">27 patients who used to slip away every month — and don't anymore.</div>
+      <div class="rfunnel">
+        <div><b>38</b><span>at risk</span></div>
+        <div><b>38</b><span>contacted</span></div>
+        <div><b>27</b><span>rebooked</span></div>
+        <div><b>~$5,400</b><span>recovered</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="cards3" style="margin-top:22px;">
+    <div class="ocard"><div class="ic">🩹</div><h3>The band-aid, fixed</h3><p>Phase 1 automates the list so it never misses a single patient.</p></div>
+    <div class="ocard"><div class="ic">🛑</div><h3>The leak, plugged</h3><p>New patients always leave with their next visit booked — so they never land on the list at all.</p></div>
+    <div class="ocard"><div class="ic">📉</div><h3>The proof, every month</h3><p>You watch the number fall. That falling number <i>is</i> your return.</p></div>
+  </div>
 </div>
 
 <!-- PLAN -->
@@ -252,7 +303,9 @@
   function go(id,el){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));el.classList.add('active');
-    window.scrollTo({top:0,behavior:'smooth'});}
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(id==='scoreboard'){var cols=document.querySelectorAll('#chart .col');cols.forEach(function(c){c.style.height='0px';});
+      setTimeout(function(){cols.forEach(function(c){c.style.height=c.dataset.h+'px';});},80);}}
   /* plan milestones */
   var miles=[
     {tag:'Day 0 · we start',col:'#0d9488',h:'We kick off',li:['Sign the HIPAA agreement and connect your Square (read-only to start)','I point the engine at your real appointment history','We start the texting-carrier registration that day — it\'s the only real wait, so the clock starts immediately']},
@@ -299,7 +352,13 @@
     var s=document.getElementById('success');s.innerHTML='<div class="big">Declined</div><ul><li>Maria gets a friendly "let\'s find another time" text with the link again.</li></ul>';s.classList.add('on');}
   function suggest(){document.getElementById('reqcard').classList.add('gone');
     var s=document.getElementById('success');s.innerHTML='<div class="big">Suggested another time</div><ul><li>You proposed <b>Tue 4 PM</b> — Maria gets it as a one-tap accept.</li></ul>';s.classList.add('on');}
-  buildSlots();buildCal();render();mile(0,document.querySelectorAll('.mile')[0]);
+  var board=[{mo:'Jun · today',n:38,first:true},{mo:'Jul',n:27},{mo:'Aug',n:17},{mo:'Sep',n:9},{mo:'Oct',n:4}];
+  function buildBoard(){var c=document.getElementById('chart'),x=document.getElementById('chartx');if(!c)return;var max=38;
+    board.forEach(function(b){var bar=document.createElement('div');bar.className='bar'+(b.first?' first':'');
+      bar.innerHTML='<div class="val">'+b.n+'</div><div class="col" data-h="'+Math.round(b.n/max*200)+'"></div>';c.appendChild(bar);
+      var l=document.createElement('div');l.className='lbl';l.textContent=b.mo;x.appendChild(l);});
+    setTimeout(function(){document.querySelectorAll('#chart .col').forEach(function(col){col.style.height=col.dataset.h+'px';});},150);}
+  buildSlots();buildCal();render();buildBoard();mile(0,document.querySelectorAll('.mile')[0]);
 </script>
 </body>
 </html>
