@@ -184,6 +184,11 @@
   .qmo{background:linear-gradient(135deg,#0ea5a4,#0d9488);border-color:transparent;color:#fff;}
   .qmo .qamt,.qmo .qwhen{color:#fff;}.qmo .qd{color:rgba(255,255,255,.92);}
   .qroll{margin-top:14px;background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:13px 16px;font-size:13px;color:#92670c;line-height:1.5;}
+  .session{background:#ede9fe;border:1px solid #ddd6fe;border-radius:7px;padding:3px 4px;display:flex;flex-direction:column;gap:2px;}
+  .session-hd{font-size:9px;font-weight:800;color:#6d28d9;letter-spacing:.02em;}
+  .member{font-size:10px;font-weight:600;color:#5b21b6;background:#fff;border-radius:4px;padding:1px 5px;line-height:1.3;}
+  .member.pending{background:#fffbeb;color:#b45309;border:1px dashed #f59e0b;font-weight:700;}
+  .member.confirmed{background:#d1fae5;color:#065f46;}
 </style>
 </head>
 <body>
@@ -304,21 +309,22 @@
 <!-- COCKPIT -->
 <div class="view" id="cockpit">
   <h2 class="vt">Your cockpit</h2>
-  <p class="vsub">Your <b>real</b> week from Square, with the request sitting in it. <b>Click ✓ Approve</b> and watch it book itself.</p>
+  <p class="vsub">Your <b>real</b> week from Square — <b>group sessions and all</b> (one slot, several patients). A patient's requesting in; group her or keep her 1-on-1, one tap.</p>
   <div class="cockwrap">
     <div class="panel cal">
       <div class="calhead"><div class="wk">Your week · Jun 8–12</div>
-        <div class="callegend"><span><i class="lg" style="background:#e0f2fe;"></i>booked</span><span><i class="lg" style="background:#ede9fe;"></i>group</span><span><i class="lg" style="background:#fde68a;"></i>pending</span><span><i class="lg" style="background:#e9eef5;"></i>dead time</span></div></div>
+        <div class="callegend"><span><i class="lg" style="background:#e0f2fe;"></i>booked</span><span><i class="lg" style="background:#ede9fe;"></i>group session</span><span><i class="lg" style="background:#fde68a;"></i>pending</span><span><i class="lg" style="background:#e9eef5;"></i>dead time</span></div></div>
       <div class="grid" id="calgrid"></div>
-      <p class="caption">The request (Maria, Tue 2 PM) shows up <b>inside your real schedule</b> — pulled live from Square. You see exactly what's around it. No mental snapshot.</p>
+      <p class="caption">Your real schedule from Square — <b>group sessions and all</b> (one slot, several patients, exactly how you run your room). A request comes in, and you drop them into a group or keep them 1-on-1 in one tap. The software <b>never</b> decides who gets grouped — you do.</p>
     </div>
     <div class="panel side"><h3>⏳ 1 request waiting</h3><div style="font-size:12px;color:var(--muted);">From your six-week list</div>
-      <div class="reqcard" id="reqcard"><div class="nm">Maria Lopez</div><div class="when2">Tue, Jun 9 · 2:00 PM</div>
+      <div class="reqcard" id="reqcard"><div class="nm">Maria Lopez</div><div class="when2">Requesting Tue, Jun 9 · 4:00 PM</div>
         <div class="meta">Last seen <b>41 days ago</b> · 4 visits · week 5 of 6</div>
-        <div class="ctx">⚠️ Heads up: 2–4 PM Tue is usually your dead time.</div>
-        <div class="acts"><button class="appr" onclick="approve()">✓ Approve</button><button onclick="suggest()">↪ Suggest</button><button onclick="decline()">✗ Decline</button></div></div>
+        <div class="ctx">💡 She's at the stage you usually <b>group</b> — ready to share a session. Your 4 PM already has Danny &amp; Lewis.</div>
+        <div class="acts"><button class="appr" onclick="approve()">✓ Add her to the 4 PM group</button></div>
+        <div class="acts" style="margin-top:8px;"><button onclick="group1on1()">Keep 1-on-1</button><button onclick="decline()">✗ Decline</button></div></div>
       <div class="success" id="success"></div>
-      <p class="caption" style="margin-top:14px;">A request lands in context, <b>one tap</b>, and the system books it, syncs it, and texts her. You never slot anyone by hand again.</p>
+      <p class="caption" style="margin-top:14px;">This is the part <b>no other software does</b>: you decide who shares a session and when. The AI just spots who's ready to group and makes it one tap — then books, syncs, and texts.</p>
     </div>
   </div>
 </div>
@@ -435,24 +441,37 @@
   /* cockpit */
   var days=['Mon 8','Tue 9','Wed 10','Thu 11','Fri 12'],hours=[9,10,11,12,13,14,15,16,17,18,19,20];
   function fmt(h){var ap=h<12?'AM':'PM';var hh=h%12===0?12:h%12;return hh+' '+ap;}
-  var ev={'0-12':[['J. Chen','book']],'0-13':[['R. Kim','book']],'0-14':[['Dead time','dead']],'0-15':[['Dead time','dead']],'0-16':[['+3 group','group']],'0-17':[['S. Russo','book']],
-    '1-9':[['D. Okafor','book']],'1-10':[['A. Patel','book']],'1-14':[['Maria L. — PENDING','pending']],'1-16':[['+2 group','group']],'1-18':[['T. Vasquez','book']],
-    '2-12':[['L. Gold','book']],'2-13':[['Dead time','dead']],'2-14':[['Dead time','dead']],'2-17':[['+4 group','group']],'2-19':[['M. Ray','book']],
-    '3-10':[['B. Stone','book']],'3-16':[['+2 group','group']],'3-17':[['N. Cole','book']],'4-9':[['P. Wells','book']],'4-12':[['K. Ito','book']],'4-15':[['+3 group','group']]};
+  var ev={
+    '0-12':[{n:'J. Chen',t:'book'}],'0-14':[{t:'dead'}],'0-15':[{t:'dead'}],
+    '0-16':[{t:'group',m:[{n:'S. Adams'},{n:'T. Lee'},{n:'R. Vance'}]}],'0-17':[{n:'S. Russo',t:'book'}],
+    '1-9':[{n:'D. Okafor',t:'book'}],'1-10':[{n:'A. Patel',t:'book'}],
+    '1-16':[{t:'group',m:[{n:'Danny K.'},{n:'Lewis P.'},{n:'Maria L.',pending:true}]}],'1-18':[{n:'T. Vasquez',t:'book'}],
+    '2-12':[{n:'L. Gold',t:'book'}],'2-14':[{t:'dead'}],'2-15':[{t:'dead'}],
+    '2-17':[{t:'group',m:[{n:'K. Ortiz'},{n:'B. Stone'},{n:'M. Ray'},{n:'J. Diaz'}]}],'2-19':[{n:'M. Ray',t:'book'}],
+    '3-10':[{n:'B. Stone',t:'book'}],'3-16':[{t:'group',m:[{n:'P. Nguyen'},{n:'A. Cole'}]}],'3-17':[{n:'N. Cole',t:'book'}],
+    '4-9':[{n:'P. Wells',t:'book'}],'4-12':[{n:'K. Ito',t:'book'}],'4-15':[{t:'group',m:[{n:'S. Park'},{n:'D. Ruiz'},{n:'L. Kim'}]}]
+  };
   function cell(cls,txt){var d=document.createElement('div');d.className=cls;d.textContent=txt;return d;}
   function buildCal(){var g=document.getElementById('calgrid');g.innerHTML='';g.appendChild(cell('gh',''));
-    days.forEach(d=>g.appendChild(cell('gh',d)));
-    hours.forEach(h=>{g.appendChild(cell('gt',fmt(h)));
-      days.forEach((d,di)=>{var c=document.createElement('div');c.className='cell';
-        (ev[di+'-'+h]||[]).forEach(([label,type])=>{var e=document.createElement('div');e.className='ev '+type;e.textContent=label;if(type==='pending')e.id='pendingEv';c.appendChild(e);});
+    days.forEach(function(d){g.appendChild(cell('gh',d));});
+    hours.forEach(function(h){g.appendChild(cell('gt',fmt(h)));
+      days.forEach(function(d,di){var c=document.createElement('div');c.className='cell';
+        (ev[di+'-'+h]||[]).forEach(function(it){
+          if(it.t==='group'){var s=document.createElement('div');s.className='session';
+            var hd=document.createElement('div');hd.className='session-hd';hd.textContent='👥 Group · '+it.m.length;s.appendChild(hd);
+            it.m.forEach(function(mem){var mm=document.createElement('div');mm.className='member'+(mem.pending?' pending':'');mm.textContent=mem.n+(mem.pending?' · pending':'');if(mem.pending)mm.id='mariaMember';s.appendChild(mm);});
+            c.appendChild(s);}
+          else if(it.t==='dead'){var e=document.createElement('div');e.className='ev dead';e.textContent='Dead time';c.appendChild(e);}
+          else{var e=document.createElement('div');e.className='ev book';e.textContent=it.n;c.appendChild(e);}
+        });
         g.appendChild(c);});});}
-  function approve(){var p=document.getElementById('pendingEv');if(p){p.className='ev confirmed';p.textContent='Maria L. ✓';p.id='';}
-    document.getElementById('reqcard').classList.add('gone');
-    var s=document.getElementById('success');s.innerHTML='<div class="big">✅ Approved &amp; booked</div><ul><li>Written to <b>Square</b> as a confirmed appointment</li><li>Synced to your <b>Google Calendar</b></li><li>Maria auto-texted: <i>"You\'re confirmed for Tue 2 PM 🎉"</i></li><li>She\'s off the six-week list</li></ul>';s.classList.add('on');}
-  function decline(){document.getElementById('reqcard').classList.add('gone');var p=document.getElementById('pendingEv');if(p)p.remove();
-    var s=document.getElementById('success');s.innerHTML='<div class="big">Declined</div><ul><li>Maria gets a friendly "let\'s find another time" text with the link again.</li></ul>';s.classList.add('on');}
-  function suggest(){document.getElementById('reqcard').classList.add('gone');
-    var s=document.getElementById('success');s.innerHTML='<div class="big">Suggested another time</div><ul><li>You proposed <b>Tue 4 PM</b> — Maria gets it as a one-tap accept.</li></ul>';s.classList.add('on');}
+  function setSuccess(html){document.getElementById('reqcard').classList.add('gone');var s=document.getElementById('success');s.innerHTML=html;s.classList.add('on');}
+  function approve(){var m=document.getElementById('mariaMember');if(m){m.className='member confirmed';m.textContent='Maria L. ✓';m.id='';}
+    setSuccess('<div class="big">✅ Grouped &amp; booked</div><ul><li><b>One slot, three patients</b> — Maria joins Danny &amp; Lewis at 4 PM</li><li>Written to <b>Square</b>, synced to <b>Google Calendar</b></li><li>Maria auto-texted: <i>"You\'re confirmed for Tue 4 PM 🎉"</i></li><li>She\'s off the six-week list</li></ul>');}
+  function group1on1(){var m=document.getElementById('mariaMember');if(m)m.remove();
+    setSuccess('<div class="big">Booked 1-on-1</div><ul><li>You kept Maria solo at 4 PM — your call. Booked, synced, texted.</li><li>The AI suggests who\'s ready to group; <b>you</b> decide.</li></ul>');}
+  function decline(){var m=document.getElementById('mariaMember');if(m)m.remove();
+    setSuccess('<div class="big">Declined</div><ul><li>Maria gets a friendly "let\'s find another time" text with the link again.</li></ul>');}
   var board=[{mo:'Jun · today',n:38,first:true},{mo:'Jul',n:27},{mo:'Aug',n:17},{mo:'Sep',n:9},{mo:'Oct',n:4}];
   function buildBoard(){var c=document.getElementById('chart'),x=document.getElementById('chartx');if(!c)return;var max=38;
     board.forEach(function(b){var bar=document.createElement('div');bar.className='bar'+(b.first?' first':'');
