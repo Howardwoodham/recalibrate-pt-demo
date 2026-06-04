@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recalibrate PT — Your Patient Revenue System</title>
+<style>
+  :root{--teal:#0ea5a4;--teal-d:#0d9488;--indigo:#6366f1;--amber:#f59e0b;--amber-d:#b45309;
+        --blue:#3b82f6;--green:#10b981;--ink:#1f2937;--muted:#6b7280;--line:#e7eaf1;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter",Segoe UI,sans-serif;
+       background:#f5f7fb;color:var(--ink);}
+  /* header */
+  .top{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);
+       border-bottom:1px solid var(--line);}
+  .topin{max-width:1100px;margin:0 auto;padding:12px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+  .logo{font-weight:800;font-size:16px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
+  .logo .d{width:11px;height:11px;border-radius:50%;background:var(--teal);}
+  .nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap;}
+  .nav button{background:none;border:none;font-size:13.5px;font-weight:600;color:var(--muted);
+              padding:8px 13px;border-radius:9px;cursor:pointer;}
+  .nav button.active{background:var(--indigo);color:#fff;}
+  .nav button:hover:not(.active){background:#eef1f8;}
+  /* views */
+  .view{display:none;max-width:1100px;margin:0 auto;padding:30px 22px 70px;animation:fade .3s;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;}}
+  h2.vt{font-size:24px;margin:0 0 4px;letter-spacing:-.01em;}
+  .vsub{color:var(--muted);font-size:14.5px;margin:0 0 26px;}
+
+  /* hero / overview */
+  .hero{background:linear-gradient(135deg,#0ea5a4,#0d9488);border-radius:24px;color:#fff;padding:38px 34px;
+        box-shadow:0 20px 50px rgba(13,148,136,.25);}
+  .hero h1{font-size:32px;margin:0 0 8px;letter-spacing:-.02em;}
+  .hero p{font-size:16px;opacity:.93;line-height:1.5;max-width:620px;margin:0;}
+  .hero .cta{display:inline-block;margin-top:22px;background:#fff;color:var(--teal-d);font-weight:700;
+             border:none;border-radius:12px;padding:13px 22px;font-size:15px;cursor:pointer;}
+  .cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px;}
+  .ocard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 8px 22px rgba(2,6,23,.06);}
+  .ocard .ic{font-size:26px;}
+  .ocard h3{margin:10px 0 4px;font-size:16px;}
+  .ocard p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.5;}
+  .statbar{display:flex;gap:14px;flex-wrap:wrap;margin-top:22px;}
+  .stat{flex:1;min-width:200px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:0 6px 16px rgba(2,6,23,.05);}
+  .stat .big{font-size:22px;font-weight:800;color:var(--teal-d);}
+  .stat .lab{font-size:12.5px;color:var(--muted);margin-top:2px;}
+
+  /* timeline / plan */
+  .stepper{display:flex;gap:0;margin:8px 0 26px;position:relative;flex-wrap:wrap;}
+  .mile{flex:1;min-width:150px;text-align:center;cursor:pointer;position:relative;padding:0 6px;}
+  .mile .dot{width:42px;height:42px;border-radius:50%;background:#fff;border:3px solid var(--line);
+             margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:19px;transition:.2s;}
+  .mile.on .dot{border-color:var(--teal);transform:scale(1.08);box-shadow:0 8px 20px rgba(14,165,164,.3);}
+  .mile.done .dot{background:var(--teal);border-color:var(--teal);}
+  .mile .when{font-size:12px;font-weight:800;margin-top:9px;color:var(--ink);}
+  .mile .what{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .mile::before{content:"";position:absolute;top:21px;left:-50%;width:100%;height:3px;background:var(--line);z-index:-0;}
+  .mile:first-child::before{display:none;}
+  .mile.done::before,.mile.on::before{background:var(--teal);}
+  .detail{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 10px 28px rgba(2,6,23,.07);}
+  .detail h3{margin:0 0 4px;font-size:19px;}
+  .detail .tag{display:inline-block;font-size:11px;font-weight:800;color:#fff;border-radius:20px;padding:3px 11px;margin-bottom:10px;}
+  .detail ul{margin:12px 0 0;padding-left:20px;}
+  .detail li{font-size:14px;line-height:1.7;color:#374151;}
+  .why{margin-top:20px;background:#f0fdfa;border:1px solid #99f6e4;border-radius:14px;padding:15px 18px;font-size:13.5px;color:#0f766e;line-height:1.55;}
+
+  /* generic phone+cockpit reused */
+  .pstage{display:flex;gap:34px;align-items:flex-start;flex-wrap:wrap;}
+  .phone{width:320px;height:640px;background:#0b1220;border-radius:42px;padding:13px;box-shadow:0 24px 60px rgba(2,6,23,.28);position:relative;flex:none;}
+  .screen{background:#fbfcfe;border-radius:30px;width:100%;height:100%;overflow:hidden;position:relative;display:flex;flex-direction:column;}
+  .notch{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:116px;height:25px;background:#0b1220;border-radius:0 0 16px 16px;z-index:5;}
+  .pscreen{display:none;flex-direction:column;height:100%;}.pscreen.on{display:flex;}
+  .pbar{padding:42px 20px 14px;background:linear-gradient(135deg,#0ea5a4,#0d9488);color:#fff;}
+  .pbar .brand{font-size:11.5px;opacity:.85;font-weight:600;letter-spacing:.04em;}
+  .pbar .ph{font-size:19px;font-weight:700;margin-top:3px;}
+  .pbody{padding:18px 20px;flex:1;overflow:auto;}.pbody p{font-size:14px;line-height:1.5;color:#374151;}
+  .smsbubble{background:#eef2f7;border-radius:16px 16px 16px 4px;padding:12px 14px;font-size:13.5px;line-height:1.45;color:#1f2937;margin-top:8px;}
+  .smsmeta{font-size:11px;color:#9aa3b2;margin:14px 0 4px;text-align:center;}
+  .field{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;margin-top:8px;}
+  .slotgrid{display:flex;flex-direction:column;gap:14px;margin-top:6px;}
+  .dname{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:.03em;}
+  .slots{display:flex;gap:8px;flex-wrap:wrap;}
+  .slot{border:1.5px solid var(--line);background:#fff;border-radius:11px;padding:9px 12px;font-size:13px;font-weight:600;cursor:pointer;color:#374151;}
+  .slot:hover{border-color:var(--teal);}.slot.sel{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .slot.dead{background:#f1f5f9;color:#aab2c0;border-style:dashed;cursor:not-allowed;}
+  .confirmcard{background:#f0fdfa;border:1px solid #99f6e4;border-radius:16px;padding:16px;margin-top:6px;}
+  .confirmcard .big{font-size:18px;font-weight:700;color:#0f766e;}
+  .donewrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+  .checkc{width:78px;height:78px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;font-size:40px;}
+  .stepnav{display:flex;gap:8px;padding:14px 16px;border-top:1px solid var(--line);background:#fff;}
+  .stepnav button{flex:1;border:1px solid var(--line);background:#fff;border-radius:11px;padding:11px;font-weight:600;cursor:pointer;font-size:13px;}
+  .stepnav button.primary{background:var(--indigo);color:#fff;border-color:var(--indigo);}
+  .pnote{max-width:300px;}.pnote h3{font-size:13px;color:var(--muted);letter-spacing:.05em;margin:0 0 10px;}
+  .pnote .row{display:flex;gap:10px;margin:12px 0;font-size:13px;line-height:1.4;}.pnote .ic{font-size:17px;}
+
+  .cockwrap{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 10px 30px rgba(2,6,23,.07);}
+  .cal{flex:1;min-width:540px;padding:18px;}
+  .calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+  .calhead .wk{font-size:16px;font-weight:700;}
+  .callegend{display:flex;gap:13px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);}
+  .callegend span{display:flex;align-items:center;gap:5px;}.lg{width:11px;height:11px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:44px repeat(5,1fr);gap:4px;}
+  .gh{font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:4px 0;}
+  .gt{font-size:10px;color:#9aa3b2;text-align:right;padding-right:5px;align-self:center;}
+  .cell{min-height:32px;border-radius:7px;background:#f7f9fc;border:1px solid #eef1f6;padding:3px;display:flex;flex-direction:column;gap:2px;}
+  .ev{font-size:10px;font-weight:600;border-radius:5px;padding:2px 5px;line-height:1.2;}
+  .ev.book{background:#e0f2fe;color:#075985;}.ev.group{background:#ede9fe;color:#5b21b6;}
+  .ev.dead{background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 5px,#e9eef5 5px,#e9eef5 10px);color:#94a3b8;font-style:italic;}
+  .ev.pending{background:#fffbeb;color:var(--amber-d);border:1.5px dashed var(--amber);font-weight:700;animation:pulse 1.8s infinite;}
+  .ev.confirmed{background:#d1fae5;color:#065f46;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0);}50%{box-shadow:0 0 0 4px rgba(245,158,11,.18);}}
+  .side{width:320px;flex:none;padding:18px;}.side h3{margin:0 0 4px;font-size:14px;}
+  .reqcard{border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px;box-shadow:0 6px 16px rgba(2,6,23,.05);}
+  .reqcard.gone{display:none;}.reqcard .nm{font-size:17px;font-weight:700;}
+  .reqcard .when2{font-size:14px;color:var(--amber-d);font-weight:700;margin:4px 0 2px;}
+  .reqcard .meta{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:6px;}
+  .reqcard .ctx{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:9px 11px;font-size:12px;color:var(--amber-d);margin-top:10px;}
+  .acts{display:flex;gap:8px;margin-top:14px;}
+  .acts button{flex:1;border-radius:11px;padding:11px;font-weight:700;font-size:13px;cursor:pointer;border:1px solid var(--line);background:#fff;color:#374151;}
+  .acts .appr{background:var(--green);color:#fff;border-color:var(--green);}
+  .success{display:none;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:16px;padding:18px;margin-top:12px;}
+  .success.on{display:block;}.success .big{font-size:16px;font-weight:700;color:#047857;}
+  .success ul{margin:10px 0 0;padding-left:18px;font-size:12.5px;color:#065f46;line-height:1.6;}
+  .caption{font-size:13px;color:var(--muted);margin:14px 4px 0;line-height:1.5;}
+
+  .flow{display:flex;gap:14px;flex-wrap:wrap;}
+  .fstep{flex:1;min-width:170px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 6px 16px rgba(2,6,23,.05);position:relative;border-top:4px solid var(--indigo);}
+  .fstep .n{position:absolute;top:-12px;left:14px;width:26px;height:26px;border-radius:50%;background:var(--indigo);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .fstep .fi{font-size:22px;}.fstep .ft{font-weight:700;font-size:14px;margin:6px 0 4px;}.fstep .fd{font-size:12px;color:var(--muted);line-height:1.45;}
+  .footnote{text-align:center;color:#aab2c0;font-size:12px;padding:24px;}
+  @media(max-width:720px){.cards3{grid-template-columns:1fr;}.cal{min-width:100%;}}
+</style>
+</head>
+<body>
+<div class="top"><div class="topin">
+  <div class="logo"><span class="d"></span> Recalibrate&nbsp;PT <span style="color:#9aa3b2;font-weight:500;">· your patient revenue system</span></div>
+  <div class="nav">
+    <button class="active" onclick="go('overview',this)">Overview</button>
+    <button onclick="go('plan',this)">The Plan</button>
+    <button onclick="go('patient',this)">Patient App</button>
+    <button onclick="go('cockpit',this)">Your Cockpit</button>
+    <button onclick="go('connect',this)">How it connects</button>
+  </div>
+</div></div>
+
+<!-- OVERVIEW -->
+<div class="view active" id="overview">
+  <div class="hero">
+    <h1>Stop losing patients you've already earned.</h1>
+    <p>A system that automatically wins back the patients slipping away — and lets the rest book in one tap that you approve. Built for your practice, run for you, live in about three weeks.</p>
+    <button class="cta" onclick="go('plan',document.querySelectorAll('.nav button')[1])">See the plan →</button>
+  </div>
+  <div class="statbar">
+    <div class="stat"><div class="big">~1 week</div><div class="lab">until you're winning back lapsed patients</div></div>
+    <div class="stat"><div class="big">~3 weeks</div><div class="lab">until the whole system is live, end to end</div></div>
+    <div class="stat"><div class="big">2 of 5</div><div class="lab">people ever learn anything new — a patient taps a link, you tap approve</div></div>
+  </div>
+  <div class="cards3">
+    <div class="ocard"><div class="ic">🎯</div><h3>Never miss a patient</h3><p>Every week, automatically, you get everyone who's due to rebook but hasn't — including the ones the front desk misses today.</p></div>
+    <div class="ocard"><div class="ic">📱</div><h3>They book, you approve</h3><p>Patients tap a link, pick a time in your hours, and it lands on your real calendar as a request. One tap to confirm. You always have final say.</p></div>
+    <div class="ocard"><div class="ic">🛡️</div><h3>Fully managed &amp; compliant</h3><p>HIPAA-built end to end. I run the whole thing weekly and send you a monthly report of exactly what it recovered.</p></div>
+  </div>
+  <p class="caption" style="text-align:center;margin-top:26px;">Use the tabs up top to walk through the plan and actually click the app →</p>
+</div>
+
+<!-- PLAN -->
+<div class="view" id="plan">
+  <h2 class="vt">The plan — what's live, and when</h2>
+  <p class="vsub">Tap each milestone. Left to right is the build order. Each phase is genuinely <b>done and working</b> when it ships — not a half-step.</p>
+  <div class="stepper" id="stepper">
+    <div class="mile done on" onclick="mile(0,this)"><div class="dot">🤝</div><div class="when">Day 0</div><div class="what">we start</div></div>
+    <div class="mile done" onclick="mile(1,this)"><div class="dot">⚡</div><div class="when">~Week 1</div><div class="what">Recover is LIVE ✓</div></div>
+    <div class="mile done" onclick="mile(2,this)"><div class="dot">🚀</div><div class="when">~Week 3</div><div class="what">The App is LIVE ✓</div></div>
+    <div class="mile" onclick="mile(3,this)"><div class="dot">🌱</div><div class="when">After</div><div class="what">your roadmap</div></div>
+  </div>
+  <div class="detail" id="detail"></div>
+  <div class="why">⚡ <b>Why this fast?</b> Because I build it with Claude — the code is <b>days, not weeks</b>. The only real waits aren't development: the texting carrier approval (~1 week), your sign-offs, and the HIPAA paperwork. So the timeline is gated by approvals, not by building.</div>
+</div>
+
+<!-- PATIENT -->
+<div class="view" id="patient">
+  <h2 class="vt">The patient app</h2>
+  <p class="vsub">Click <b>Tap the link →</b> to walk the whole journey. No app to install — it opens from a text.</p>
+  <div class="pstage">
+    <div class="phone"><div class="screen"><div class="notch"></div>
+      <div class="pscreen on" data-s="0"><div class="pbar"><div class="brand">MESSAGES · Recalibrate PT</div><div class="ph">Text message</div></div>
+        <div class="pbody"><div class="smsmeta">Today 9:02 AM</div>
+        <div class="smsbubble">Hi Maria 👋 it's been about 6 weeks since your last visit at Recalibrate — let's get your next session on the calendar.<br><br>Tap to book: recalibrate.app/m/9f2a7c<br><br>Reply STOP to opt out.</div>
+        <p style="font-size:11.5px;color:#9aa3b2;margin-top:14px;">↑ Secure, personalized link. No health info in the text. Nothing to download.</p></div></div>
+      <div class="pscreen" data-s="1"><div class="pbar"><div class="brand">recalibrate.app · secure</div><div class="ph">Welcome back, Maria</div></div>
+        <div class="pbody"><p>Let's get your next session booked. Quick security check 👇</p>
+        <label style="font-size:12px;font-weight:700;color:#6b7280;">Confirm your date of birth</label>
+        <input class="field" value="04 / 18 / 1990">
+        <p style="font-size:11.5px;color:#9aa3b2;margin-top:14px;">The link already knows who you are — this just keeps your info private. No password.</p>
+        <div class="confirmcard" style="background:#eef2ff;border-color:#c7d2fe;margin-top:18px;"><div style="font-size:12px;color:#4338ca;font-weight:700;">Your plan</div><div style="font-size:13px;color:#3730a3;margin-top:4px;">Week 5 of 6 · 9 of 12 visits done · keep it up 💪</div></div></div></div>
+      <div class="pscreen" data-s="2"><div class="pbar"><div class="brand">recalibrate.app</div><div class="ph">Pick a time</div></div>
+        <div class="pbody"><p style="margin-top:0;">Here are Steve's open hours this week. Pick what works — he'll confirm.</p><div class="slotgrid" id="slotgrid"></div></div></div>
+      <div class="pscreen" data-s="3"><div class="pbar"><div class="brand">recalibrate.app</div><div class="ph">Confirm request</div></div>
+        <div class="pbody"><div class="confirmcard"><div style="font-size:12px;color:#0f766e;font-weight:700;">YOU'RE REQUESTING</div><div class="big" id="confirmTime">Tuesday, June 9 · 2:00 PM</div><div style="font-size:13px;color:#0d9488;margin-top:6px;">with Steve at Recalibrate PT</div></div>
+        <p style="font-size:13px;">Steve will confirm and you'll get a text — usually within a couple hours. You're not booked until he says yes.</p></div></div>
+      <div class="pscreen" data-s="4"><div class="pbar"><div class="brand">recalibrate.app</div><div class="ph">Request sent</div></div>
+        <div class="donewrap"><div class="checkc">✅</div><h2 style="margin:18px 0 6px;font-size:20px;">You're on Steve's list!</h2><p style="color:#6b7280;font-size:14px;">We'll text you the second he confirms your <b>Tuesday 2:00 PM</b>. 🙌</p></div></div>
+      <div class="stepnav"><button onclick="pstep(-1)" id="pback">← Back</button><button class="primary" onclick="pstep(1)" id="pnext">Tap the link →</button></div>
+    </div></div>
+    <div class="pnote"><h3>WHAT THIS SOLVES</h3>
+      <div class="row"><span class="ic">🔗</span><div><b>Tap a link, no app.</b> One tap from the text.</div></div>
+      <div class="row"><span class="ic">🧠</span><div><b>It knows them.</b> Lands on "Hi Maria" with their plan pre-loaded.</div></div>
+      <div class="row"><span class="ic">🔒</span><div><b>Secure.</b> Expiring link + a quick DOB check before anything private shows.</div></div>
+      <div class="row"><span class="ic">📅</span><div><b>Open hours only</b> — never your real calendar. They request; you decide.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- COCKPIT -->
+<div class="view" id="cockpit">
+  <h2 class="vt">Your cockpit</h2>
+  <p class="vsub">Your <b>real</b> week from Square, with the request sitting in it. <b>Click ✓ Approve</b> and watch it book itself.</p>
+  <div class="cockwrap">
+    <div class="panel cal">
+      <div class="calhead"><div class="wk">Your week · Jun 8–12</div>
+        <div class="callegend"><span><i class="lg" style="background:#e0f2fe;"></i>booked</span><span><i class="lg" style="background:#ede9fe;"></i>group</span><span><i class="lg" style="background:#fde68a;"></i>pending</span><span><i class="lg" style="background:#e9eef5;"></i>dead time</span></div></div>
+      <div class="grid" id="calgrid"></div>
+      <p class="caption">The request (Maria, Tue 2 PM) shows up <b>inside your real schedule</b> — pulled live from Square. You see exactly what's around it. No mental snapshot.</p>
+    </div>
+    <div class="panel side"><h3>⏳ 1 request waiting</h3><div style="font-size:12px;color:var(--muted);">From your six-week list</div>
+      <div class="reqcard" id="reqcard"><div class="nm">Maria Lopez</div><div class="when2">Tue, Jun 9 · 2:00 PM</div>
+        <div class="meta">Last seen <b>41 days ago</b> · 4 visits · week 5 of 6</div>
+        <div class="ctx">⚠️ Heads up: 2–4 PM Tue is usually your dead time.</div>
+        <div class="acts"><button class="appr" onclick="approve()">✓ Approve</button><button onclick="suggest()">↪ Suggest</button><button onclick="decline()">✗ Decline</button></div></div>
+      <div class="success" id="success"></div>
+      <p class="caption" style="margin-top:14px;">A request lands in context, <b>one tap</b>, and the system books it, syncs it, and texts her. You never slot anyone by hand again.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CONNECT -->
+<div class="view" id="connect">
+  <h2 class="vt">How it all connects</h2>
+  <p class="vsub">Five steps, mostly invisible. You only ever touch step 4.</p>
+  <div class="flow">
+    <div class="fstep" style="border-top-color:var(--teal);"><div class="n" style="background:var(--teal);">1</div><div class="fi">🔗</div><div class="ft">Patient taps the link</div><div class="fd">Secure, pre-loaded. No app, no password.</div></div>
+    <div class="fstep" style="border-top-color:var(--teal);"><div class="n" style="background:var(--teal);">2</div><div class="fi">📅</div><div class="ft">Picks an open hour</div><div class="fd">Your bookable hours only → it becomes a request. Never sees your real calendar.</div></div>
+    <div class="fstep"><div class="n">3</div><div class="fi">🧠</div><div class="ft">The system catches it</div><div class="fd">Pulls your real Square calendar + a Google personal overlay for context.</div></div>
+    <div class="fstep" style="border-top-color:var(--amber);"><div class="n" style="background:var(--amber);">4</div><div class="fi">✅</div><div class="ft">You tap approve</div><div class="fd">See it inside your real day, decide in one tap. Final say, always.</div></div>
+    <div class="fstep" style="border-top-color:var(--green);"><div class="n" style="background:var(--green);">5</div><div class="fi">🎉</div><div class="ft">Booked &amp; notified</div><div class="fd">Writes to Square → syncs to Google → patient texted "confirmed."</div></div>
+  </div>
+  <p class="caption" style="margin-top:22px;">Your real schedule comes straight from <b>Square</b> (your system of record). Confirmed bookings sync out to Google Calendar. Texts run on a HIPAA-signed service — never any health info in a message.</p>
+</div>
+
+<div class="footnote">Recalibrate PT — built &amp; run by Howard Woodham. This is a live preview; final app is built for your practice.</div>
+
+<script>
+  function go(id,el){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));el.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});}
+  /* plan milestones */
+  var miles=[
+    {tag:'Day 0 · we start',col:'#0d9488',h:'We kick off',li:['Sign the HIPAA agreement and connect your Square (read-only to start)','I point the engine at your real appointment history','We start the texting-carrier registration that day — it\'s the only real wait, so the clock starts immediately']},
+    {tag:'~Week 1 · LIVE ✓',col:'#0ea5a4',h:'Recover is live — you\'re winning patients back',li:['Your six-week list runs automatically every week — no front desk, no misses','You pick who to reach; the system auto-texts them "time to rebook"','Replies come to you; you slot them','✓ By end of week 1 this is DONE and recovering revenue — on its own, whether or not we build anything else']},
+    {tag:'~Week 3 · LIVE ✓',col:'#6366f1',h:'The full app is live — end to end',li:['Your cockpit: your real calendar with requests on it, one-tap approve','The patient app: tap a link, pick a time, send insurance docs, see their plan','New-patient intake + insurance verification — nobody slips through','✓ By ~week 3 the whole system runs end to end']},
+    {tag:'After · your timeline',col:'#f59e0b',h:'Your roadmap — separate wins, whenever',li:['$250/visit billing calculator (auto-does Rachel\'s math)','Space-rental finder — fill your space (~$100k/yr)','Email + one master calendar (your private track)','Instagram / TikTok setup with starter content — free','Each is independent — start any of them whenever you want']}
+  ];
+  function mile(i,el){document.querySelectorAll('.mile').forEach(m=>m.classList.remove('on'));el.classList.add('on');
+    var m=miles[i];document.getElementById('detail').innerHTML=
+      '<span class="tag" style="background:'+m.col+'">'+m.tag+'</span><h3>'+m.h+'</h3><ul>'+m.li.map(x=>'<li>'+x+'</li>').join('')+'</ul>';}
+  /* patient steps */
+  var s=0,labels=['Tap the link →','Continue →','Pick this time →','Send request →','Start over ↺'];
+  function render(){document.querySelectorAll('.pscreen').forEach(p=>p.classList.toggle('on',+p.dataset.s===s));
+    document.getElementById('pnext').textContent=labels[s];document.getElementById('pback').style.visibility=s===0?'hidden':'visible';}
+  function pstep(d){if(s===4&&d>0){s=0;render();return;}s=Math.max(0,Math.min(4,s+d));render();}
+  var slotData=[{day:'Mon Jun 8',slots:[['12:00 PM',0],['1:00 PM',0],['2:00 PM',1],['5:00 PM',0]]},
+    {day:'Tue Jun 9',slots:[['9:00 AM',0],['10:00 AM',0],['2:00 PM',0],['6:00 PM',0]]},
+    {day:'Wed Jun 10',slots:[['12:00 PM',0],['1:00 PM',0],['7:00 PM',0]]}];
+  function buildSlots(){var g=document.getElementById('slotgrid');g.innerHTML='';
+    slotData.forEach(d=>{var row=document.createElement('div');row.innerHTML='<div class="dname">'+d.day+'</div>';
+      var sl=document.createElement('div');sl.className='slots';
+      d.slots.forEach(([t,dead])=>{var b=document.createElement('div');b.className='slot'+(dead?' dead':'');b.textContent=t+(dead?' · dead':'');
+        if(!dead)b.onclick=function(){document.querySelectorAll('.slot').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');
+          document.getElementById('confirmTime').textContent=d.day.replace(' Jun',' June')+' · '+t;};
+        sl.appendChild(b);});row.appendChild(sl);g.appendChild(row);});}
+  /* cockpit */
+  var days=['Mon 8','Tue 9','Wed 10','Thu 11','Fri 12'],hours=[9,10,11,12,13,14,15,16,17,18,19,20];
+  function fmt(h){var ap=h<12?'AM':'PM';var hh=h%12===0?12:h%12;return hh+' '+ap;}
+  var ev={'0-12':[['J. Chen','book']],'0-13':[['R. Kim','book']],'0-14':[['Dead time','dead']],'0-15':[['Dead time','dead']],'0-16':[['+3 group','group']],'0-17':[['S. Russo','book']],
+    '1-9':[['D. Okafor','book']],'1-10':[['A. Patel','book']],'1-14':[['Maria L. — PENDING','pending']],'1-16':[['+2 group','group']],'1-18':[['T. Vasquez','book']],
+    '2-12':[['L. Gold','book']],'2-13':[['Dead time','dead']],'2-14':[['Dead time','dead']],'2-17':[['+4 group','group']],'2-19':[['M. Ray','book']],
+    '3-10':[['B. Stone','book']],'3-16':[['+2 group','group']],'3-17':[['N. Cole','book']],'4-9':[['P. Wells','book']],'4-12':[['K. Ito','book']],'4-15':[['+3 group','group']]};
+  function cell(cls,txt){var d=document.createElement('div');d.className=cls;d.textContent=txt;return d;}
+  function buildCal(){var g=document.getElementById('calgrid');g.innerHTML='';g.appendChild(cell('gh',''));
+    days.forEach(d=>g.appendChild(cell('gh',d)));
+    hours.forEach(h=>{g.appendChild(cell('gt',fmt(h)));
+      days.forEach((d,di)=>{var c=document.createElement('div');c.className='cell';
+        (ev[di+'-'+h]||[]).forEach(([label,type])=>{var e=document.createElement('div');e.className='ev '+type;e.textContent=label;if(type==='pending')e.id='pendingEv';c.appendChild(e);});
+        g.appendChild(c);});});}
+  function approve(){var p=document.getElementById('pendingEv');if(p){p.className='ev confirmed';p.textContent='Maria L. ✓';p.id='';}
+    document.getElementById('reqcard').classList.add('gone');
+    var s=document.getElementById('success');s.innerHTML='<div class="big">✅ Approved &amp; booked</div><ul><li>Written to <b>Square</b> as a confirmed appointment</li><li>Synced to your <b>Google Calendar</b></li><li>Maria auto-texted: <i>"You\'re confirmed for Tue 2 PM 🎉"</i></li><li>She\'s off the six-week list</li></ul>';s.classList.add('on');}
+  function decline(){document.getElementById('reqcard').classList.add('gone');var p=document.getElementById('pendingEv');if(p)p.remove();
+    var s=document.getElementById('success');s.innerHTML='<div class="big">Declined</div><ul><li>Maria gets a friendly "let\'s find another time" text with the link again.</li></ul>';s.classList.add('on');}
+  function suggest(){document.getElementById('reqcard').classList.add('gone');
+    var s=document.getElementById('success');s.innerHTML='<div class="big">Suggested another time</div><ul><li>You proposed <b>Tue 4 PM</b> — Maria gets it as a one-tap accept.</li></ul>';s.classList.add('on');}
+  buildSlots();buildCal();render();mile(0,document.querySelectorAll('.mile')[0]);
+</script>
+</body>
+</html>
